@@ -30,12 +30,11 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  //[ '00001.txt', '00002.txt' ] = dirData
-  //?? just use fs.readdir(dataDir) to get arr of all file names in the dir??
+
   fs.readdir(exports.dataDir, (err, dirData) => {
 
     if (err) {
-      callback(null, err);
+      callback(err);
     } else {
       // callback(console.log(dirData));
       callback(null, _.map(dirData, (id, key) => {
@@ -45,44 +44,66 @@ exports.readAll = (callback) => {
       ;
     }
   });
-  //dirData = [filename, filname2, etc.]
-  //items = {id: text, id2: text, id3: text}
-  // var data = _.map(items, (text, id) => {
-  //   return { id, text };
-  // });
-  // callback(null, data);
+
 };
 
 exports.readOne = (id, callback) => {
   //fs.readfile (id) on
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  fs.readFile(`${exports.dataDir}/${id}.txt`, (err, fileData) => {
+    if (err) {
+      callback(err);
+    } else {
+      var data = fileData.toString();
+      // callback(console.log('line 57:', {"id": id, "text": data}))
+      //expect { id: '00001', text: 'buy chocolate' }
+      callback(null, {"id": id, "text": data});
+    }
+  });
+  // var text = items[id];
+  // if (!text) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
-};
+  fs.readFile(`${exports.dataDir}/${id}.txt`, (err) => {
+    if (err) {
+      callback(err);
+    } else {
+      fs.writeFile(`${exports.dataDir}/${id}.txt`, text, (err, fileData) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, text);//should we be returning anything? why, what?
+        }
+      })
+    }
+  });
+}
+
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  //use fs.unlink to delete
+  fs.unlink(`${exports.dataDir}/${id}.txt`, (err) => {
+    if (err) {
+      callback(err);
+    } else {
+      callback();
+    }
+  });
 };
+
+
+// var item = items[id];
+//   delete items[id];
+//   if (!item) {
+//     // report an error if item not found
+//     callback(new Error(`No item with id: ${id}`));
+//   } else {
+//     callback();
+//   }
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
