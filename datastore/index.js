@@ -30,15 +30,31 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  //use getNextUniuqe Id to get id
-  //
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  //[ '00001.txt', '00002.txt' ] = dirData
+  //?? just use fs.readdir(dataDir) to get arr of all file names in the dir??
+  fs.readdir(exports.dataDir, (err, dirData) => {
+
+    if (err) {
+      callback(null, err);
+    } else {
+      // callback(console.log(dirData));
+      callback(null, _.map(dirData, (id, key) => {
+        var onlyid = id.substring(0, 5);
+        return { 'id': onlyid, 'text': onlyid };
+      }))
+      ;
+    }
   });
-  callback(null, data);
+  //dirData = [filename, filname2, etc.]
+  //items = {id: text, id2: text, id3: text}
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
+  //fs.readfile (id) on
   var text = items[id];
   if (!text) {
     callback(new Error(`No item with id: ${id}`));
@@ -78,3 +94,8 @@ exports.initialize = () => {
   }
 };
 // console.log(exports.dataDir);
+// console.log(exports.readAll())
+//list of Q
+//why is there error handling in both exports. getUniqueId if its functions that are already dealing with erros
+// is the callback in the getUniqueId parameter necessary? is the it best possible implementation?
+// is there a way to read all the files within a directory?
