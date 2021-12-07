@@ -37,10 +37,32 @@ const writeCounter = (count, callback) => {
 };
 
 // Public API - Fix this function //////////////////////////////////////////////
-
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+//callback to return value
+//read first, then write as success callback
+exports.getNextUniqueId = (callback) => {
+  readCounter((err, currentCount)=> {
+    writeCounter(currentCount + 1, (err, counterString)=> {
+      callback(err, counterString);
+      // counter = counterString
+      // return counter
+    });
+  });
+  // readCounter()
+  //fs.readFile(exports.counterFile, (err, fileData)
+  //readCounter(callBack1)
+  //var callBack1 = (err, number) =>{if (err) {throw (err)} else {return number}}
+  // var callBack1 = (err, number) => {
+  //   if (err) {
+  //     throw ('error')
+  //   } else {
+  //     console.log(number)
+  //     counter = number;
+  //     return zeroPaddedNumber(counter+1)
+  //   }
+  // }
+  // readCounter(callBack1)
+  // counter = counter + 1;
+  // return zeroPaddedNumber(counter);
 };
 
 
@@ -48,3 +70,4 @@ exports.getNextUniqueId = () => {
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
 exports.counterFile = path.join(__dirname, 'counter.txt');
+// console.log(exports.getNextUniqueId())
